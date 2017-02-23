@@ -29,14 +29,11 @@ function valid(point_list, answer){
 				.map(function(out){
 					return answer.indexOf( point + "-" + out) < 0 && 
 						answer.indexOf( out + "-" + point) < 0 
-				})
-				.some();
-		})
-		.some();
+				}).some();
+		}).some();
 }
 
 function Eulerian_Path_Recur(point_list, odd_list, answer){
-
 
 	if (odd_list.length > 2) {
 		console.log("No Solution.");
@@ -47,10 +44,10 @@ function Eulerian_Path_Recur(point_list, odd_list, answer){
 		if (valid(point_list, answer))
 			return _(answer)
 				.dropRight()
-				.map(function(side){ return side.substr(0, side.length-1); })
+				.map(function(side){ return side.split("-")[0]; })
 				.value()
-				.join('')
-				+ _.last(answer);
+				.join("-")
+				+ "-" + _.last(answer);
 		else
 			return [];
 	}
