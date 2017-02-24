@@ -4,9 +4,7 @@ function Eulerian_Path(point_list) {
 				return _.map(outs, function(i){ return _.toString(i); }); 
 			}), 
 			cal_odd_list(point_list), 
-			[ start_point(point_list, cal_odd_list(point_list))
-				+ "-" + 
-				point_list[start_point(point_list, cal_odd_list(point_list))][0] ]
+			[]
 			);
 }
 
@@ -14,8 +12,8 @@ function cal_odd_list(point_list){
 	return _(point_list).pickBy(function(point){ return point.length%2;}).keys().value();
 }
 
-function start_point(point_list, odd_list){
-	return odd_list.length>0 ? odd_list[0] : _(point_list).keys().head();
+function start_point_list(point_list, odd_list){
+	return odd_list.length>0 ? odd_list : _.keys(point_list);
 }
 
 function max_length(point_list){
@@ -52,17 +50,20 @@ function Eulerian_Path_Recur(point_list, odd_list, answer){
 			return [];
 	}
 
-	return _(point_list[ _.last(answer).split("-")[1] ])
-		.map(function(out) {
-			if (answer.indexOf(out+"-"+_.last(answer).split("-")[1]) < 0 &&
-				answer.indexOf(_.last(answer).split("-")[1]+"-"+out) < 0)
-				return Eulerian_Path_Recur(
-					point_list,
-					odd_list,
-					_.union(answer, [_.last(answer).split("-")[1]+"-"+out]));
-			else 
-				return [];
+	return _( _.isEmpty(answer)? start_point_list(point_list, odd_list) : [_.last(answer).split("-")[1]])
+		.map(function(point) {
+			return _.map(point_list[point], function(out){
+					if (answer.indexOf(out+"-"+point) < 0 &&
+						answer.indexOf(point+"-"+out) < 0)
+						return Eulerian_Path_Recur(
+							point_list,
+							odd_list,
+							_.union(answer, [point+"-"+out]));
+					else 
+						return [];
+				})
 		})
+		.flatten()
 		.filter(function(result){ return result.length > 0;})
 		.thru(function(result){
 			if (typeof(_.head(result)) !== 'string' )
